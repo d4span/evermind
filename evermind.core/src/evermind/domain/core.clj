@@ -8,7 +8,7 @@
 
 (s/def ::parent ::node)
 
-(s/def ::children (s/* ::node))
+(s/def ::children (s/coll-of ::node :kind set?))
 
 
 (defn create-node
@@ -37,8 +37,8 @@
 (s/fdef add-child
         :args (s/cat :parent ::node :child ::node)
         :ret ::node
-        :fn (fn [arg] (some #(= % (-> arg :args :child))
-                             (-> arg :ret :children))))
+        :fn #(contains? (-> % :ret :children) (-> % :args :child)))
+
 
 
 
