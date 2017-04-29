@@ -6,5 +6,6 @@
 
   :plugins [[lein-modules "0.3.11"]]
 
-  :dependencies [[org.clojure/clojure "_"]])
+  :profiles {:dev {:dependencies [[evermind.test-util :version]]}}
 
+  :dependencies [[org.clojure/clojure "_"]])
