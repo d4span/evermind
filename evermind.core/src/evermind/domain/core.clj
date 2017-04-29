@@ -23,6 +23,10 @@
 (defn create-mindmap
   ([] (create-node)))
 
+(s/fdef create-mindmap
+        :args (s/cat)
+        :ret ::node)
+
 
 
 (defn add-child
