@@ -1,0 +1,12 @@
+language: clojure
+
+addons:
+  apt:
+    packages:
+      - oracle-java8-installer
+
+script:
+  - lein modules do test, install
+
+jdk:
+- oraclejdk8
