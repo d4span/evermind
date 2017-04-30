@@ -17,6 +17,13 @@
   (s/keys :req-un []
           :opt-un [::text]))
 
+(s/def ::pred-result boolean?)
+
+(s/fdef ::pred
+         :args (s/cat :node ::node)
+         :ret ::pred-result)
+
+
 
 (defn create-node
   ([] {}))
@@ -71,7 +78,18 @@
 
 
 (defn filter-children
-  ([node pred]))
+  ([node pred]
+    (assoc node :children (cljset/union
+                            #{}
+                            (cljset/select pred (:children node))))))
+
+(s/fdef filter-children
+        :args (s/cat :node ::node :pred ::pred)
+        :ret ::node
+        :fn #(and
+               (<=
+                 (count (-> % :ret :children))
+                 (count (-> % :args :node :children)))))
 
 
 

@@ -27,5 +27,9 @@
   (is (tu/check 'evermind.domain.core/remove-child)))
 
 
+(deftest test-filter-children
+         (is (tu/check 'evermind.domain.core/filter-children)))
+
+
 (deftest test-create-mindmap
          (is (tu/check 'evermind.domain.core/create-mindmap)))
