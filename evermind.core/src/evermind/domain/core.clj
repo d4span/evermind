@@ -31,12 +31,12 @@
 
 
 (defn add-child
-      ([parent child]
-        (assoc parent :children
-          (cljset/union (:children parent) #{child}))))
+      ([node child]
+        (assoc node :children
+          (cljset/union (:children node) #{child}))))
 
 (s/fdef add-child
-        :args (s/cat :parent ::node :child ::node)
+        :args (s/cat :node ::node :child ::node)
         :ret ::node
         :fn #(contains? (-> % :ret :children) (-> % :args :child)))
 
