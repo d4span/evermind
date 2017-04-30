@@ -46,7 +46,19 @@
 
 
 (defn remove-child
-  ([node child]))
+  ([node child]
+    (assoc node :children
+           (cljset/union
+             #{}
+             (cljset/difference (:children node) #{child})))))
+
+(s/fdef remove-child
+        :args (s/cat :node ::node :child ::node)
+        :ret ::node
+        :fn #(not
+               (contains?
+                 (-> % :ret :children)
+                 (-> % :args :child))))
 
 
 
