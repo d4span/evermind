@@ -1,7 +1,7 @@
 (ns evermind.domain.core
-    (:require [clojure.spec.alpha :as s]
-      [clojure.set :as cljset]
-      [clojure.spec.gen.alpha :as gen]))
+  (:require [clojure.spec.alpha :as s]
+            [clojure.spec.gen.alpha :as gen]
+            [clojure.set :as cljset]))
 
 (s/def ::node
   (s/keys :req-un []
@@ -17,12 +17,13 @@
   (s/keys :req-un []
           :opt-un [::text]))
 
-(s/def ::pred-result boolean?)
-
-(s/fdef ::pred
-         :args (s/cat :node ::node)
-         :ret ::pred-result)
-
+(s/def ::node-pred (s/with-gen (s/fspec :args (s/cat :node ::node) :ret boolean?)
+                               #(gen/return
+                                  (memoize
+                                    (first
+                                      (gen/sample
+                                        (s/gen (s/fspec :args (s/cat :node ::node) :ret boolean?))
+                                        1))))))
 
 
 (defn create-node
@@ -35,21 +36,20 @@
 
 
 (defn set-attributes
-      ([node attributes]
-        (assoc node :attributes attributes)))
+  ([node attributes]
+   (assoc node :attributes attributes)))
 
 (s/fdef set-attributes
         :args (s/cat :node ::node :attributes ::attributes)
         :ret ::node
         :fn #(= (-> % :ret :attributes)
-                 (-> % :args :attributes)))
+                (-> % :args :attributes)))
 
 
 
 (defn add-child
-      ([node child]
-        (assoc node :children
-          (cljset/union (:children node) #{child}))))
+  ([node child]
+   (assoc node :children (set (conj (:children node) child)))))
 
 (s/fdef add-child
         :args (s/cat :node ::node :child ::node)
@@ -62,10 +62,7 @@
 
 (defn remove-child
   ([node child]
-    (assoc node :children
-           (cljset/union
-             #{}
-             (cljset/difference (:children node) #{child})))))
+   (assoc node :children (set (remove #(= % child) (:children node))))))
 
 (s/fdef remove-child
         :args (s/cat :node ::node :child ::node)
@@ -79,22 +76,20 @@
 
 (defn filter-children
   ([node pred]
-    (assoc node :children (cljset/union
-                            #{}
-                            (cljset/select pred (:children node))))))
+   (assoc node :children (set (filter pred (:children node))))))
 
 (s/fdef filter-children
-        :args (s/cat :node ::node :pred ::pred)
+        :args (s/cat :node ::node :pred ::node-pred)
         :ret ::node
-        :fn #(and
-               (<=
-                 (count (-> % :ret :children))
-                 (count (-> % :args :node :children)))))
+        :fn #(and (every? false? (map (-> % :args :pred)
+                                      (cljset/difference (-> % :args :node :children)
+                                                         (-> % :ret :children))))
+                  (every? true? (map (-> % :args :pred) (-> % :ret :children)))))
 
 
 
 (defn create-mindmap
-      ([] (create-node)))
+  ([] (create-node)))
 
 (s/fdef create-mindmap
         :args (s/cat)
