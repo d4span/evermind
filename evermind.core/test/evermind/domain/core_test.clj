@@ -28,7 +28,7 @@
 
 
 (deftest test-filter-children
-         (is (tu/check 'evermind.domain.core/filter-children)))
+         (is (tu/check 'evermind.domain.core/filter-children {::clojure.spec.test.check/opts {:num-tests 10}})))
 
 
 (deftest test-create-mindmap
