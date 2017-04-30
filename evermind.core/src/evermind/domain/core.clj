@@ -38,7 +38,9 @@
 (s/fdef add-child
         :args (s/cat :node ::node :child ::node)
         :ret ::node
-        :fn #(contains? (-> % :ret :children) (-> % :args :child)))
+        :fn #(contains?
+               (-> % :ret :children)
+               (-> % :args :child)))
 
 
 
