@@ -1,5 +1,6 @@
 (ns evermind.domain.core-test
   (:require [clojure.test :refer :all]
+            [evermind.domain.core-specs :refer :all]
             [evermind.domain.core :refer :all]
             [clojure.spec.test.alpha :as stest]
             [evermind.test-util :as tu]))

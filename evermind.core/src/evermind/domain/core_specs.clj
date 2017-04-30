@@ -1,7 +1,9 @@
-(ns evermind.domain.core
-  (:require [clojure.spec.alpha :as s]
+(ns evermind.domain.core-specs
+  (:require [evermind.domain.core :as d]
+            [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
-            [clojure.set :as cljset]))
+            [clojure.set :as cljset]
+            ))
 
 (s/def ::node
   (s/keys :req-un []
@@ -26,20 +28,14 @@
                                         1))))))
 
 
-(defn create-node
-  ([] {}))
 
-(s/fdef create-node
+(s/fdef d/create-node
         :args (s/cat)
         :ret ::node)
 
 
 
-(defn set-attributes
-  ([node attributes]
-   (assoc node :attributes attributes)))
-
-(s/fdef set-attributes
+(s/fdef d/set-attributes
         :args (s/cat :node ::node :attributes ::attributes)
         :ret ::node
         :fn #(= (-> % :ret :attributes)
@@ -47,11 +43,7 @@
 
 
 
-(defn add-child
-  ([node child]
-   (assoc node :children (set (conj (:children node) child)))))
-
-(s/fdef add-child
+(s/fdef d/add-child
         :args (s/cat :node ::node :child ::node)
         :ret ::node
         :fn #(contains?
@@ -60,11 +52,7 @@
 
 
 
-(defn remove-child
-  ([node child]
-   (assoc node :children (set (remove #(= % child) (:children node))))))
-
-(s/fdef remove-child
+(s/fdef d/remove-child
         :args (s/cat :node ::node :child ::node)
         :ret ::node
         :fn #(not
@@ -74,11 +62,7 @@
 
 
 
-(defn filter-children
-  ([node pred]
-   (assoc node :children (set (filter pred (:children node))))))
-
-(s/fdef filter-children
+(s/fdef d/filter-children
         :args (s/cat :node ::node :pred ::node-pred)
         :ret ::node
         :fn #(and (every? false? (map (-> % :args :pred)
@@ -88,9 +72,6 @@
 
 
 
-(defn create-mindmap
-  ([] (create-node)))
-
-(s/fdef create-mindmap
+(s/fdef d/create-mindmap
         :args (s/cat)
         :ret ::node)
