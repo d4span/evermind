@@ -1,6 +1,7 @@
 (ns evermind.domain.core
-  (:require [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]))
+    (:require [clojure.spec.alpha :as s]
+      [clojure.set :as cljset]
+      [clojure.spec.gen.alpha :as gen]))
 
 (s/def ::node
   (s/keys :req-un []
@@ -8,7 +9,7 @@
 
 (s/def ::parent ::node)
 
-(s/def ::children (s/coll-of ::node :kind set?))
+(s/def ::children (s/coll-of ::node :kind set? :into #{}))
 
 
 (defn create-node
@@ -30,9 +31,9 @@
 
 
 (defn add-child
-  ([parent child]
-   (assoc parent :children (conj (:children parent) child))))
-;;  ([node child pos]))
+      ([parent child]
+        (assoc parent :children
+          (cljset/union (:children parent) #{child}))))
 
 (s/fdef add-child
         :args (s/cat :parent ::node :child ::node)
