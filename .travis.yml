@@ -1,6 +1,6 @@
 language: clojure
 
-sudo: true
+sudo: required
 
 addons:
   apt:
