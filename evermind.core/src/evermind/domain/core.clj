@@ -5,11 +5,17 @@
 
 (s/def ::node
   (s/keys :req-un []
-          :opt-un [::parent ::children]))
+          :opt-un [::parent ::children ::attributes]))
 
 (s/def ::parent ::node)
 
 (s/def ::children (s/coll-of ::node :kind set? :into #{}))
+
+(s/def ::text string?)
+
+(s/def ::attributes
+  (s/keys :req-un []
+          :opt-un [::text]))
 
 
 (defn create-node
@@ -21,12 +27,15 @@
 
 
 
-(defn create-mindmap
-  ([] (create-node)))
+(defn set-attributes
+      ([node attributes]
+        (assoc node :attributes attributes)))
 
-(s/fdef create-mindmap
-        :args (s/cat)
-        :ret ::node)
+(s/fdef set-attributes
+        :args (s/cat :node ::node :attributes ::attributes)
+        :ret ::node
+        :fn #(= (-> % :ret :attributes)
+                 (-> % :args :attributes)))
 
 
 
@@ -41,7 +50,6 @@
         :fn #(contains?
                (-> % :ret :children)
                (-> % :args :child)))
-
 
 
 
@@ -64,3 +72,12 @@
 
 (defn filter-children
   ([node pred]))
+
+
+
+(defn create-mindmap
+      ([] (create-node)))
+
+(s/fdef create-mindmap
+        :args (s/cat)
+        :ret ::node)
