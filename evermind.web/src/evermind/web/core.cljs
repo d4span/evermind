@@ -10,9 +10,9 @@
 ;; define your app data so that it doesn't get over-written on reload
 
 (def init-mindmap
-  (d/add-child
+  (d/add-children
     (d/set-attributes (d/create-mindmap) {:text "Root node"})
-    (d/add-child (d/set-attributes (d/create-node) {:text "Child 1"})
+    (d/add-children (d/set-attributes (d/create-node) {:text "Child 1"})
                  (d/set-attributes (d/create-node) {:text "Child 1-2"}))
     (d/set-attributes (d/create-node) {:text "Child 2"})
     (d/set-attributes (d/create-node) {:text "Child 3"})))

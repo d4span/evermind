@@ -14,9 +14,11 @@
 
 
 
-(defn add-child
+(defn add-children
   ([node child]
-   (assoc node :children (set (conj (:children node) child)))))
+    (assoc node :children (set (conj (:children node) child))))
+  ([node child & more]
+    (reduce add-children node (conj more child))))
 
 
 
