@@ -16,7 +16,7 @@
                            [cljsjs/react-dom "15.4.2-1"]
                            [sablono "0.7.7"]
                            [org.omcljs/om "1.0.0-alpha46"]
-                           [evermind.core "0.1.0-SNAPSHOT"]]
+                           [evermind.core :version]]
 
             :source-paths ["src"]
 
