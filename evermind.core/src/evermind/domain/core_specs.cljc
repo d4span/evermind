@@ -2,8 +2,8 @@
   (:require [evermind.domain.core :as d]
             [clojure.spec.alpha :as s]
             [clojure.spec.gen.alpha :as gen]
-            [clojure.set :as cljset]
-            ))
+            [clojure.set :as cljset]))
+
 
 (s/def ::node
   (s/keys :req-un []
