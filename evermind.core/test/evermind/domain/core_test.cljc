@@ -20,8 +20,8 @@
          (is (tu/check 'evermind.domain.core/set-attributes)))
 
 
-(deftest test-add-child
-         (is (tu/check 'evermind.domain.core/add-child)))
+(deftest test-add-children
+         (is (tu/check 'evermind.domain.core/add-children)))
 
 
 (deftest test-remove-child

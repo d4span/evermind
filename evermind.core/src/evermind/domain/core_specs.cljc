@@ -43,7 +43,7 @@
 
 
 
-(s/fdef d/add-child
+(s/fdef d/add-children
         :args (s/cat :node ::node :child ::node)
         :ret ::node
         :fn #(contains?
