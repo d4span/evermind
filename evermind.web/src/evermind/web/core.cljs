@@ -1,7 +1,7 @@
 (ns evermind.web.core
-  (:require [om.core :as om :include-macros true]
-            [om.dom :as dom :include-macros true]
-            [evermind.domain.core :as d]))
+ (:require [om.core :as om :include-macros true]
+           [om.dom :as dom :include-macros true]
+           [evermind.domain.core :as d]))
 
 (enable-console-print!)
 
@@ -13,9 +13,14 @@
   (d/add-children
     (d/set-attributes (d/create-mindmap) {:text "Root node"})
     (d/add-children (d/set-attributes (d/create-node) {:text "Child 1"})
-                 (d/set-attributes (d/create-node) {:text "Child 1-2"}))
-    (d/set-attributes (d/create-node) {:text "Child 2"})
-    (d/set-attributes (d/create-node) {:text "Child 3"})))
+                    (d/set-attributes (d/create-node) {:text "Child 1-2"})
+                    (d/set-attributes (d/create-node) {:text "Child 1-3"})
+                    (d/set-attributes (d/create-node) {:text "Child 1-4"}))
+    (d/add-children (d/set-attributes (d/create-node) {:text "Child 2"})
+                    (d/set-attributes (d/create-node) {:text "Child 2-1"})
+                    (d/set-attributes (d/create-node) {:text "Child 2-2"}))
+    (d/add-children (d/set-attributes (d/create-node) {:text "Child 3"})
+                    (d/set-attributes (d/create-node) {:text "Child 3-2"}))))
 
 (defonce app-state (atom
                      {:text    "hello"
@@ -24,23 +29,39 @@
 (defn node-to-string [node]
       (-> node :attributes :text))
 
+(defn position-children [depth top bottom children]
+      (let [c (count children)
+            box-height (/ (- bottom top) c)
+            d (+ 1 depth)]
+           (map-indexed (fn [i n]
+                            (let [t (+ top (* box-height i))
+                                  b (+ t box-height)]
+                                 {:depth  d
+                                  :node   n
+                                  :x      (* d 10)
+                                  :y      (+ t (/ (- b t) 2))
+                                  :top    t
+                                  :bottom b
+                                  :text   (node-to-string n)}))
+                        children)))
+
 (defn node-view [node owner]
       (reify
         om/IRender
         (render [this]
-                (dom/li nil
-                        (dom/h2 nil (node-to-string node))
-                        (apply dom/ul nil
-                               (om/build-all node-view (:children node)))))))
+                (dom/g #js {:key (str "group-" (:key node))}
+                       (dom/text #js {:fill "black" :font-size "10px" :x (:x node) :y (:y node)}
+                                 (:text node))
+                       (om/build-all node-view
+                                     (position-children (+ 1 (:depth node)) (:top node) (:bottom node) (:children (:node node))))))))
 
 (defn mindmap-view [data owner]
       (reify
         om/IRender
         (render [this]
                 (dom/div nil
-                         (dom/h2 nil "Mind Map")
-                         (dom/ul nil
-                                 (om/build node-view (:mindmap data)))))))
+                         (dom/svg #js {:id "mindmap-svg" :viewBox "0 0 100 100"}
+                                  (om/build-all node-view (position-children 1 0 100 [(:mindmap data)])))))))
 
 (om/root mindmap-view app-state {:target (. js/document (getElementById "app"))})
 
