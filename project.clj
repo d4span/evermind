@@ -2,16 +2,17 @@
   :description "FIXME: write description"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
-            :url "http://www.eclipse.org/legal/epl-v10.html"}
+            :url  "http://www.eclipse.org/legal/epl-v10.html"}
 
   :plugins [[lein-modules "0.3.11"]]
 
-  :modules {:versions {org.clojure/clojure "1.9.0-alpha16"
-                       com.gfredericks.forks.org.clojure/test.check "0.10.0-PREVIEW-1"}}
+  :modules {:versions {org.clojure/clojure       "1.9.0-alpha16"
+                       org.clojure/clojurescript "1.9.521"
+                       org.clojure/test.check    "0.9.0"}}
 
   :main ^:skip-aot evermind.core
   :target-path "target/%s"
 
   :profiles {:uberjar {:aot :all}
-             :dev {:dependencies [[com.gfredericks.forks.org.clojure/test.check "_"]]}})
+             :dev     {:dependencies [[org.clojure/test.check "_"]]}})
 

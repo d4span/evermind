@@ -1,7 +1,11 @@
 (ns evermind.domain.core-specs
   (:require [evermind.domain.core :as d]
-            [clojure.spec.alpha :as s]
-            [clojure.spec.gen.alpha :as gen]
+            ;#?@(:clj [[clojure.spec.alpha :as s]
+            ;          [clojure.spec.gen.alpha :as gen]]
+            ;    :cljs [[clojure.spec :as s]
+            ;           [cljs.spec.impl.gen :as gen]])
+            [clojure.spec :as s]
+            [cljs.spec.impl.gen :as gen]
             [clojure.set :as cljset]))
 
 
@@ -24,8 +28,7 @@
                                   (memoize
                                     (first
                                       (gen/sample
-                                        (s/gen (s/fspec :args (s/cat :node ::node) :ret boolean?))
-                                        1))))))
+                                        (s/gen (s/fspec :args (s/cat :node ::node) :ret boolean?)) 1))))))
 
 
 

@@ -4,6 +4,23 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
-  :plugins [[lein-modules "0.3.11"]]
+  :plugins [[lein-modules "0.3.11"]
+            [lein-cljsbuild "1.1.6"]]
 
-  :dependencies [[org.clojure/clojure "_"]])
+  :cljsbuild {
+              :builds [{
+                        ; The path to the top-level ClojureScript source directory:
+                        :source-paths ["src"]
+                        ; The standard ClojureScript compiler options:
+                        ; (See the ClojureScript compiler documentation for details.)
+                        :compiler {
+                                   :optimizations :whitespace
+                                   :pretty-print true}}]}
+
+  :hooks [leiningen.cljsbuild]
+
+  :profiles {:uberjar {:aot :all
+                       :prep-tasks ["compile" ["cljsbuild" "once"]]}}
+
+  :dependencies [[org.clojure/clojure "_"]
+                 [org.clojure/clojurescript "_"]])
