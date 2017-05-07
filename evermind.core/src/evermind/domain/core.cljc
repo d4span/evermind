@@ -1,43 +1,9 @@
 (ns evermind.domain.core
   (:require [clojure.set :as cljset]
-            [clojure.spec :as s]
-            [cljs.spec.impl.gen :as gen]))
-
-
-
-(defn create-node
-  ([] {}))
-
-
-
-(defn set-attributes
-  ([node attributes]
-   (assoc node :attributes attributes)))
-
-
-
-(defn add-children
-  ([node child]
-   (assoc node :children (set (conj (:children node) child))))
-  ([node child & more]
-   (reduce add-children node (conj more child))))
-
-
-
-(defn remove-child
-  ([node child]
-   (assoc node :children (set (remove #(= % child) (:children node))))))
-
-
-
-(defn filter-children
-  ([node pred]
-   (assoc node :children (set (filter pred (:children node))))))
-
-
-
-(defn create-mindmap
-  ([] (create-node)))
+            #?(:cljs [cljs.spec :as s]
+               :clj  [clojure.spec.alpha :as s])
+            #?(:cljs [cljs.spec.impl.gen :as gen]
+               :clj  [clojure.spec.gen.alpha :as gen])))
 
 (s/def ::node
   (s/keys :req-un []
@@ -61,12 +27,18 @@
                                         (s/gen (s/fspec :args (s/cat :node ::node) :ret boolean?)) 1))))))
 
 
+(defn create-node
+  ([] {}))
 
 (s/fdef create-node
         :args (s/cat)
         :ret ::node)
 
 
+
+(defn set-attributes
+  ([node attributes]
+   (assoc node :attributes attributes)))
 
 (s/fdef set-attributes
         :args (s/cat :node ::node :attributes ::attributes)
@@ -76,6 +48,12 @@
 
 
 
+(defn add-children
+  ([node child]
+   (assoc node :children (set (conj (:children node) child))))
+  ([node child & more]
+   (reduce add-children node (conj more child))))
+
 (s/fdef add-children
         :args (s/cat :node ::node :child ::node)
         :ret ::node
@@ -84,6 +62,10 @@
                (-> % :args :child)))
 
 
+
+(defn remove-child
+  ([node child]
+   (assoc node :children (set (remove #(= % child) (:children node))))))
 
 (s/fdef remove-child
         :args (s/cat :node ::node :child ::node)
@@ -95,6 +77,10 @@
 
 
 
+(defn filter-children
+  ([node pred]
+   (assoc node :children (set (filter pred (:children node))))))
+
 (s/fdef filter-children
         :args (s/cat :node ::node :pred ::node-pred)
         :ret ::node
@@ -104,6 +90,9 @@
                   (every? true? (map (-> % :args :pred) (-> % :ret :children)))))
 
 
+
+(defn create-mindmap
+  ([] (create-node)))
 
 (s/fdef create-mindmap
         :args (s/cat)

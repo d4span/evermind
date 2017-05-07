@@ -38,8 +38,8 @@
   ([var num-tests]
    `(do
       (clojure.test/is (= (clojure.spec.test.alpha/summarize-results
-                            (clojure.spec.test.alpha/check ~var {:clojure.spec.test.check/opts {:num-tests ~num-tests}})
-                            {:total 1 :check-passed 1}))))))
+                            (clojure.spec.test.alpha/check ~var {:clojure.spec.test.check/opts {:num-tests ~num-tests}}))
+                          {:total 1 :check-passed 1})))))
 
 (defmacro check-fn-cljs
   "Meant to be used in a (cljs.test/deftest). Invokes cljs.spec.test/check on var and
@@ -50,5 +50,5 @@
    `(do
       (cljs.test/is (= (cljs.spec.test/summarize-results
                          (cljs.spec.test/check ~var
-                                               {:clojure.test.check/opts {:num-tests ~num-tests}}))
+                                               {:clojure.test.check/opts {:num-tests (/ ~num-tests 2)}}))
                        {:total 1 :check-passed 1})))))
