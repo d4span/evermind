@@ -9,6 +9,9 @@ addons:
 
 script:
   - lein modules do test, install
+  - curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+  - sudo apt-get install -y nodejs
+  - lein modules with-profile cljs-dev,dev do doo node doo once
 
 jdk:
 - oraclejdk8
