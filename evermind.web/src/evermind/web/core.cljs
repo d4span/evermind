@@ -1,11 +1,11 @@
 (ns evermind.web.core
- (:require [om.core :as om :include-macros true]
-           [om.dom :as dom :include-macros true]
-           [evermind.domain.core :as d]))
+ (:require-macros [cljs.core.async.macros :refer [go]])
+ (:require [cljs.core.async :refer [put! chan <!]]
+           [evermind.domain.core :as d]
+           [om.core :as om :include-macros true]
+           [om.dom :as dom :include-macros true]))
 
 (enable-console-print!)
-
-(println "This text is printed from src/evermind.web/core.cljs. Go ahead and edit it and see reloading in action.")
 
 ;; define your app data so that it doesn't get over-written on reload
 
@@ -29,39 +29,86 @@
 (defn node-to-string [node]
       (-> node :attributes :text))
 
-(defn position-children [depth top bottom children]
-      (let [c (count children)
-            box-height (/ (- bottom top) c)
-            d (+ 1 depth)]
-           (map-indexed (fn [i n]
-                            (let [t (+ top (* box-height i))
-                                  b (+ t box-height)]
-                                 {:depth  d
-                                  :node   n
-                                  :x      (* d 10)
-                                  :y      (+ t (/ (- b t) 2))
-                                  :top    t
-                                  :bottom b
-                                  :text   (node-to-string n)}))
-                        children)))
+(defn update-node-position
+  [depth top bottom node]
+  (update-in node [:visu]
+    (fn [c] {:x (* depth 20)
+             :y (+ top (/ (- bottom top) 2))})))
+
+(defn update-node
+  ([root]
+   (update-node 0 0 0 100 root))
+  ([depth index top bottom node]
+   (let [newnode (update-node-position depth top bottom node)
+         c (count (:children node))
+         box-height (/ (- bottom top) c)
+         d (inc depth)]
+     (update-in newnode [:children]
+       (fn [children]
+           (map-indexed
+             (fn [i c]
+              (let [t (+ top (* box-height i))
+                    b (+ t box-height)]
+               (update-node d i t b c)))
+             children))))))
 
 (defn node-view [node owner]
-      (reify
-        om/IRender
-        (render [this]
-                (dom/g #js {:key (str "group-" (:key node))}
-                       (dom/text #js {:fill "black" :font-size "10px" :x (:x node) :y (:y node)}
-                                 (:text node))
-                       (om/build-all node-view
-                                     (position-children (+ 1 (:depth node)) (:top node) (:bottom node) (:children (:node node))))))))
+  (reify
+    om/IInitState
+    (init-state [state]
+      {:select (:select state)})
+    om/IRenderState
+    (render-state [this {:keys [select]}]
+        (dom/g #js {:key (str "group-" (:key node))}
+          (dom/text #js {:onClick (fn [e] (put! select node))
+                         :fontSize "3pt"
+                         :fill (if (-> node :attributes :selected) "red" "black")
+                         :x (-> node :visu :x)
+                         :y (-> node :visu :y)}
+                    (-> node :attributes :text))
+          (om/build-all node-view
+                        (:children node)
+                        {:init-state {:select select}
+                         :key :id})))))
+
+(defn update-node-selection [node selected]
+  (if (== (-> node :id) (-> selected :id))
+    (update-in node [:attributes]
+               (fn [v]
+                 (assoc v :selected true)))
+    (update-in node [:attributes]
+               (fn [v]
+                 (assoc v :selected false)))))
+
+(defn select-node [node selected]
+  (let [updated-node (update-node-selection node selected)]
+    (update-in updated-node [:children]
+               (fn [children]
+                 (mapv
+                   (fn [c] (select-node c selected))
+                   children)))))
+
 
 (defn mindmap-view [data owner]
-      (reify
-        om/IRender
-        (render [this]
-                (dom/div nil
-                         (dom/svg #js {:id "mindmap-svg" :viewBox "0 0 100 100"}
-                                  (om/build-all node-view (position-children 1 0 100 [(:mindmap data)])))))))
+  (reify
+    om/IInitState
+    (init-state [_]
+       {:select (chan)})
+    om/IWillMount
+    (will-mount [_]
+       (let [select (om/get-state owner :select)]
+         (go (loop []
+               (let [selected (<! select)]
+                  (om/transact! data [:mindmap]
+                                (fn [m]
+                                  (select-node m selected)))
+                  (recur))))))
+    om/IRenderState
+    (render-state [this {:keys [select]}]
+        (let [mindmap (update-node (:mindmap data))]
+          (dom/div nil
+            (dom/svg #js {:id "mindmap-svg" :viewBox "0 0 100 100"}
+              (om/build node-view mindmap {:init-state {:select select}})))))))
 
 (om/root mindmap-view app-state {:target (. js/document (getElementById "app"))})
 
