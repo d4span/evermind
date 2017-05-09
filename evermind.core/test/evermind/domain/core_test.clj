@@ -1,36 +1,18 @@
 (ns evermind.domain.core-test
-  (:require [clojure.test :refer :all]
-            [evermind.domain.core-specs :refer :all]
-            [evermind.domain.core :refer :all]
-            [clojure.spec.test.alpha :as stest]
-            [evermind.test-util :as tu]))
+  (:require    [clojure.test :refer :all]
+               [clojure.spec.test.alpha]
+               [evermind.test-util]
+               [evermind.domain.core]))
 
-(defn fixture [f]
-  (tu/instrument-namespaces)
-  (f))
+;(defn fixture [f]
+;  (tu/instrument-namespaces)
+;  (f))
+;
+;(use-fixtures :once fixture)
 
-(use-fixtures :once fixture)
-
-
-(deftest test-create-node
-         (is (tu/check 'evermind.domain.core/create-node)))
-
-
-(deftest test-set-attributes
-         (is (tu/check 'evermind.domain.core/set-attributes)))
-
-
-(deftest test-add-children
-         (is (tu/check 'evermind.domain.core/add-children)))
-
-
-(deftest test-remove-child
-  (is (tu/check 'evermind.domain.core/remove-child)))
-
-
-(deftest test-filter-children
-         (is (tu/check 'evermind.domain.core/filter-children {::clojure.spec.test.check/opts {:num-tests 20}})))
-
-
-(deftest test-create-mindmap
-         (is (tu/check 'evermind.domain.core/create-mindmap)))
+(deftest test-create-node (evermind.test-util/check-fn-clj 'evermind.domain.core/create-node 40))
+(deftest test-set-attributes (evermind.test-util/check-fn-clj 'evermind.domain.core/set-attributes 40))
+(deftest test-add-children (evermind.test-util/check-fn-clj 'evermind.domain.core/add-children 40))
+(deftest test-remove-child (evermind.test-util/check-fn-clj 'evermind.domain.core/remove-child 40))
+(deftest test-filter-children (evermind.test-util/check-fn-clj 'evermind.domain.core/filter-children 20))
+(deftest test-create-mindmap (evermind.test-util/check-fn-clj 'evermind.domain.core/create-mindmap 40))
