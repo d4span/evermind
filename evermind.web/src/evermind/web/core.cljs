@@ -88,6 +88,15 @@
                    (fn [c] (select-node c selected))
                    children)))))
 
+(defn handle-key-press [k data]
+  (case k
+    100 ; d
+    (om/transact! data [:mindmap]
+                  (fn [m]
+                    (d/filter-tree
+                      m
+                      (fn [c] (not (-> c :attributes :selected))))))
+    data))
 
 (defn mindmap-view [data owner]
   (reify
@@ -106,8 +115,10 @@
     om/IRenderState
     (render-state [this {:keys [select]}]
         (let [mindmap (update-node (:mindmap data))]
-          (dom/div nil
-            (dom/svg #js {:id "mindmap-svg" :viewBox "0 0 100 100"}
+          (dom/div #js {:tabIndex 0
+                        :onKeyPress #(handle-key-press (.-charCode %) data)}
+            (dom/svg #js {:id "mindmap-svg"
+                          :viewBox "0 0 100 100"}
               (om/build node-view mindmap {:init-state {:select select}})))))))
 
 (om/root mindmap-view app-state {:target (. js/document (getElementById "app"))})
