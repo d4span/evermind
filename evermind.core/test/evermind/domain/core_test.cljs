@@ -11,4 +11,5 @@
 (deftest test-add-children (evermind.test-util/check-fn-cljs 'evermind.domain.core/add-children 10))
 (deftest test-remove-child (evermind.test-util/check-fn-cljs 'evermind.domain.core/remove-child 10))
 ;(deftest test-filter-children (evermind.test-util/check-fn-cljs 'evermind.domain.core/filter-children 5))
+;(deftest test-filter-tree (evermind.test-util/check-fn-cljs 'evermind.domain.core/filter-tree 5))
 (deftest test-create-mindmap (evermind.test-util/check-fn-cljs 'evermind.domain.core/create-mindmap 10))

@@ -100,6 +100,17 @@
 
 
 
+(defn filter-tree
+  ([node pred]
+   (let [filtered (filter-children node pred)]
+     (assoc filtered :children (set (map #(filter-tree % pred) (:children filtered)))))))
+
+(s/fdef filter-tree
+        :args (s/cat :node ::node :pred ::node-pred)
+        :ret ::node)
+
+
+
 (defn create-mindmap
   ([] (create-node)))
 

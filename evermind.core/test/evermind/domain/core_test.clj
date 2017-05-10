@@ -16,4 +16,5 @@
 (deftest test-add-children (evermind.test-util/check-fn-clj 'evermind.domain.core/add-children 40))
 (deftest test-remove-child (evermind.test-util/check-fn-clj 'evermind.domain.core/remove-child 40))
 (deftest test-filter-children (evermind.test-util/check-fn-clj 'evermind.domain.core/filter-children 20))
+(deftest test-filter-tree (evermind.test-util/check-fn-clj 'evermind.domain.core/filter-tree 20))
 (deftest test-create-mindmap (evermind.test-util/check-fn-clj 'evermind.domain.core/create-mindmap 40))
