@@ -10,6 +10,7 @@
 ;
 ;(use-fixtures :once fixture)
 
+(deftest test-generate-id (evermind.test-util/check-fn-clj 'evermind.domain.core/generate-id 40))
 (deftest test-create-node (evermind.test-util/check-fn-clj 'evermind.domain.core/create-node 40))
 (deftest test-set-attributes (evermind.test-util/check-fn-clj 'evermind.domain.core/set-attributes 40))
 (deftest test-add-children (evermind.test-util/check-fn-clj 'evermind.domain.core/add-children 40))

@@ -8,6 +8,7 @@
             [lein-cljsbuild "1.1.6"]
             [lein-doo "0.1.7" :exclusions [[org.clojure/clojurescript]]]]
 
-  :dependencies [[org.clojure/clojure "_"]]
+  :dependencies [[org.clojure/clojure "_"]
+                 [cljs-uuid "0.0.4"]]
 
   :profiles {:dev {:dependencies [[evermind.test-util :version]]}})

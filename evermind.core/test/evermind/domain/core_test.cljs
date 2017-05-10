@@ -5,6 +5,7 @@
   (:require-macros [cljs.spec.test :refer [check]]
                    [evermind.test-util]))
 
+(deftest test-generate-id (evermind.test-util/check-fn-cljs 'evermind.domain.core/generate-id 10))
 (deftest test-create-node (evermind.test-util/check-fn-cljs 'evermind.domain.core/create-node 10))
 (deftest test-set-attributes (evermind.test-util/check-fn-cljs 'evermind.domain.core/set-attributes 10))
 (deftest test-add-children (evermind.test-util/check-fn-cljs 'evermind.domain.core/add-children 10))

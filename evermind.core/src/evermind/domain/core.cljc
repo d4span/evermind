@@ -1,12 +1,15 @@
 (ns evermind.domain.core
   (:require [clojure.set :as cljset]
+           [cljs-uuid.core :as uuid]
             #?(:cljs [cljs.spec :as s]
                :clj  [clojure.spec.alpha :as s])
             #?(:cljs [cljs.spec.impl.gen :as gen]
                :clj  [clojure.spec.gen.alpha :as gen])))
 
+(s/def ::id string?)
+
 (s/def ::node
-  (s/keys :req-un []
+  (s/keys :req-un [::id]
           :opt-un [::parent ::children ::attributes]))
 
 (s/def ::parent ::node)
@@ -26,9 +29,15 @@
                                       (gen/sample
                                         (s/gen (s/fspec :args (s/cat :node ::node) :ret boolean?)) 1))))))
 
+(defn generate-id
+  ([] (str (uuid/make-random))))
+
+(s/fdef generate-id
+        :args (s/cat)
+        :ret ::id)
 
 (defn create-node
-  ([] {}))
+  ([] {:id (generate-id)}))
 
 (s/fdef create-node
         :args (s/cat)
