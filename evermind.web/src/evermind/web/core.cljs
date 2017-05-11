@@ -89,29 +89,56 @@
                    (fn [c] (select-node c selected))
                    children)))))
 
+(defn selected-node
+  [tree]
+  (d/reduce-tree
+    tree
+    (fn [n] (-> n :attributes :selected))))
+
+
+(defn handle-left
+  [data]
+  (om/transact! data [:mindmap]
+                (fn [m]
+                  (let [selected (first (selected-node m))
+                        parent (d/parent-node m selected)]
+                   (select-node m parent)))))
+
+(defn handle-delete
+  [data]
+  (om/transact! data [:mindmap]
+                (fn [m]
+                  (d/filter-tree
+                    m
+                    (fn [c] (not (-> c :attributes :selected)))))))
+
+(defn handle-insert
+  [data]
+  (om/transact! data [:mindmap]
+                (fn [m]
+                  (d/map-tree
+                    m
+                    (fn [n]
+                      (if (-> n :attributes :selected)
+                        (d/add-children n (d/set-attributes (d/create-node) {:text "New node"}))
+                        n))))))
+
 (defn handle-key-press [k data]
   (case k
-    100 ; d
-    (om/transact! data [:mindmap]
-                  (fn [m]
-                    (d/filter-tree
-                      m
-                      (fn [c] (not (-> c :attributes :selected))))))
-    97 ; a
-    (om/transact! data [:mindmap]
-                  (fn [m]
-                    (d/map-tree
-                      m
-                      (fn [n]
-                        (if (-> n :attributes :selected)
-                          (d/add-children n (d/set-attributes (d/create-node) {:text "New node"}))
-                          n)))))
-    73 ; I
-    data
-    105 ; i
-    data
-    111 ; o
-    data
+    ; h
+    104 (handle-left data)
+    ; j
+    106 data
+    ; d
+    100 (handle-delete data)
+    ; a
+    97 (handle-insert data)
+    ; I
+    73 data
+    ; i
+    105 data
+    ; o
+    111 data
     data))
 
 (defn mindmap-view [data owner]
