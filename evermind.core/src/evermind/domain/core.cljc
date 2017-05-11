@@ -141,6 +141,22 @@
 
 
 
+(defn parent-node
+  [tree node]
+  (first
+    (reduce-tree
+      tree
+      (fn [n]
+        (some
+          (fn [c] (= (-> c :id) (-> node :id)))
+          (-> n :children))))))
+
+(s/fdef parent-node
+        :args (s/cat :node ::node :node ::node)
+        :ret (s/or :not-found nil? :parent ::node))
+
+
+
 (defn create-mindmap
   ([] (create-node)))
 
