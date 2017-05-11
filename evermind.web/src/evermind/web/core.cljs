@@ -120,7 +120,24 @@
                     m
                     (fn [n]
                       (if (-> n :attributes :selected)
-                        (d/add-children n (d/set-attributes (d/create-node) {:text "New node"}))
+                         (let [node-text (.prompt js/window "Node content" "New node")]
+                           (if node-text
+                             (d/add-children n (d/set-attributes (d/create-node) {:text node-text}))
+                             n))
+                         n))))))
+
+(defn handle-update
+  [data]
+  (om/transact! data [:mindmap]
+                (fn [m]
+                  (d/map-tree
+                    m
+                    (fn [n]
+                      (if (-> n :attributes :selected)
+                        (let [node-text (.prompt js/window "Node content" (-> n :attributes :text))]
+                          (if node-text
+                            (d/set-attributes n (merge (-> n :attributes) {:text node-text}))
+                            n))
                         n))))))
 
 (defn handle-key-press [k data]
@@ -133,6 +150,8 @@
     100 (handle-delete data)
     ; a
     97 (handle-insert data)
+    ; e
+    101 (handle-update data)
     ; I
     73 data
     ; i
