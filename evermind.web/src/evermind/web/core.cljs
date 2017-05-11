@@ -97,6 +97,21 @@
                     (d/filter-tree
                       m
                       (fn [c] (not (-> c :attributes :selected))))))
+    97 ; a
+    (om/transact! data [:mindmap]
+                  (fn [m]
+                    (d/map-tree
+                      m
+                      (fn [n]
+                        (if (-> n :attributes :selected)
+                          (d/add-children n (d/set-attributes (d/create-node) {:text "New node"}))
+                          n)))))
+    73 ; I
+    data
+    105 ; i
+    data
+    111 ; o
+    data
     data))
 
 (defn mindmap-view [data owner]
