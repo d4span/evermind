@@ -30,16 +30,17 @@
       (-> node :attributes :text))
 
 (defn update-node-position
-  [depth top bottom node]
+  [depth index top bottom node]
   (update-in node [:visu]
     (fn [c] {:x (* depth 20)
-             :y (+ top (/ (- bottom top) 2))})))
+             :y (+ top (/ (- bottom top) 2))
+             :index index})))
 
 (defn update-node
   ([root]
    (update-node 0 0 0 100 root))
   ([depth index top bottom node]
-   (let [newnode (update-node-position depth top bottom node)
+   (let [newnode (update-node-position depth index top bottom node)
          c (count (:children node))
          box-height (/ (- bottom top) c)
          d (inc depth)]
@@ -67,7 +68,7 @@
                          :y (-> node :visu :y)}
                     (-> node :attributes :text))
           (om/build-all node-view
-                        (:children node)
+                        (sort-by #(:index %) (:children node))
                         {:init-state {:select select}
                          :key :id})))))
 
