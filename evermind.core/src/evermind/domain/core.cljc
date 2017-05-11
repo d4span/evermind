@@ -111,6 +111,17 @@
 
 
 
+(defn map-tree
+  ([node f]
+   (let [mapped (f node)]
+     (assoc mapped :children (set (map #(map-tree % f) (:children mapped)))))))
+
+(s/fdef map-tree
+        :args (s/cat :node ::node :pred ::node-pred)
+        :ret ::node)
+
+
+
 (defn create-mindmap
   ([] (create-node)))
 
