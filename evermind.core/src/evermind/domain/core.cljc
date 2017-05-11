@@ -29,6 +29,10 @@
                                       (gen/sample
                                         (s/gen (s/fspec :args (s/cat :node ::node) :ret boolean?)) 1))))))
 
+(s/def ::reduce-result (s/coll-of ::node :kind set? :into #{}))
+
+
+
 (defn generate-id
   ([] (str (uuid/make-random))))
 
@@ -119,6 +123,21 @@
 (s/fdef map-tree
         :args (s/cat :node ::node :pred ::node-pred)
         :ret ::node)
+
+
+
+(defn reduce-tree
+  ([node pred]
+   (let [init (if (pred node) #{node} #{})]
+    (reduce
+      (fn [a n]
+        (cljset/union a (reduce-tree n pred)))
+      init
+      (-> node :children)))))
+
+(s/fdef reduce-tree
+        :args (s/cat :node ::node :pred ::node-pred)
+        :ret ::reduce-result)
 
 
 
