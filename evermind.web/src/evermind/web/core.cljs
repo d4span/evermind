@@ -105,7 +105,11 @@
                 (fn [m]
                   (let [selected (first (selected-node m))
                         parent (d/parent-node m selected)]
-                   (select-node m parent)))))
+                   (if (nil? selected)
+                     (select-node m m)
+                     (if (not (nil? parent))
+                       (select-node m parent)
+                       m))))))
 
 (defn handle-right
   [data]
@@ -113,7 +117,11 @@
                 (fn [m]
                   (let [selected (first (selected-node m))
                         child (first (:children selected))]
-                   (select-node m child)))))
+                   (if (nil? selected)
+                     (select-node m m)
+                     (if (not (nil? child))
+                       (select-node m child)
+                       m))))))
 
 (defn next-sibling
   [parent of]
@@ -136,9 +144,11 @@
                   (let [selected (first (selected-node m))
                         parent (d/parent-node m selected)
                         next-sibling (next-sibling parent is-selected)]
-                   (if (not (nil? next-sibling))
-                     (select-node m next-sibling)
-                     m)))))
+                   (if (nil? selected)
+                     (select-node m m)
+                     (if (not (nil? next-sibling))
+                       (select-node m next-sibling)
+                       (m)))))))
 
 (defn previous-sibling
   [parent of]
@@ -160,9 +170,11 @@
                   (let [selected (first (selected-node m))
                         parent (d/parent-node m selected)
                         previous-sibling (previous-sibling parent is-selected)]
-                   (if (not (nil? previous-sibling))
-                     (select-node m previous-sibling)
-                     m)))))
+                   (if (nil? selected)
+                     (select-node m m)
+                     (if (not (nil? previous-sibling))
+                       (select-node m previous-sibling)
+                       m))))))
 
 (defn handle-delete
   [data]
