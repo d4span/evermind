@@ -148,7 +148,7 @@
                      (select-node m m)
                      (if (not (nil? next-sibling))
                        (select-node m next-sibling)
-                       (m)))))))
+                       m))))))
 
 (defn previous-sibling
   [parent of]
