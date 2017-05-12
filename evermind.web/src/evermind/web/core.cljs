@@ -107,6 +107,63 @@
                         parent (d/parent-node m selected)]
                    (select-node m parent)))))
 
+(defn handle-right
+  [data]
+  (om/transact! data [:mindmap]
+                (fn [m]
+                  (let [selected (first (selected-node m))
+                        child (first (:children selected))]
+                   (select-node m child)))))
+
+(defn next-sibling
+  [parent of]
+  (let [n (reduce (fn [a c]
+                    (if (= true a)
+                        c
+                        (if (of c)
+                          true
+                          a)))
+                  nil
+                  (:children parent))]
+   (if (= true n)
+     nil
+     n)))
+
+(defn handle-next-sibling
+  [data]
+  (om/transact! data [:mindmap]
+                (fn [m]
+                  (let [selected (first (selected-node m))
+                        parent (d/parent-node m selected)
+                        next-sibling (next-sibling parent is-selected)]
+                   (if (not (nil? next-sibling))
+                     (select-node m next-sibling)
+                     m)))))
+
+(defn previous-sibling
+  [parent of]
+  (second
+   (reduce
+     (fn [[a s] c]
+       (if (is-selected c)
+         [nil, a]
+         (if (nil? s)
+           [c, nil]
+           [a, s])))
+     [nil nil]
+     (:children parent))))
+
+(defn handle-previous-sibling
+  [data]
+  (om/transact! data [:mindmap]
+                (fn [m]
+                  (let [selected (first (selected-node m))
+                        parent (d/parent-node m selected)
+                        previous-sibling (previous-sibling parent is-selected)]
+                   (if (not (nil? previous-sibling))
+                     (select-node m previous-sibling)
+                     m)))))
+
 (defn handle-delete
   [data]
   (om/transact! data [:mindmap]
@@ -145,20 +202,24 @@
 
 (defn handle-key-press [k data]
   (case k
-    ; h
-    104 (handle-left data)
-    ; j
-    106 data
-    ; d
-    100 (handle-delete data)
-    ; a
-    97 (handle-insert data)
-    ; e
-    101 (handle-edit data)
     ; I
     73 data
+    ; a
+    97 (handle-insert data)
+    ; d
+    100 (handle-delete data)
+    ; e
+    101 (handle-edit data)
+    ; h
+    104 (handle-left data)
     ; i
     105 data
+    ; j
+    106 (handle-next-sibling data)
+    ; k
+    107 (handle-previous-sibling data)
+    ; l
+    108 (handle-right data)
     ; o
     111 data
     data))
