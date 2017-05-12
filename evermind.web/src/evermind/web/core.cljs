@@ -168,9 +168,15 @@
   [data]
   (om/transact! data [:mindmap]
                 (fn [m]
-                  (d/filter-tree
-                    m
-                    (fn [c] (not (-> c :attributes :selected)))))))
+                  (let [selected (first (selected-node m))
+                        parent (d/parent-node m selected)
+                        next-sibling (next-sibling parent is-selected)
+                        filtered (d/filter-tree
+                                   m
+                                   (fn [c] (not (is-selected c))))]
+                    (if (nil? next-sibling)
+                      (select-node filtered parent)
+                      (select-node filtered next-sibling))))))
 
 (defn handle-insert
   [data]
