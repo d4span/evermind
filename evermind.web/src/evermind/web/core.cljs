@@ -126,7 +126,7 @@
                              n))
                          n))))))
 
-(defn handle-update
+(defn handle-edit
   [data]
   (om/transact! data [:mindmap]
                 (fn [m]
@@ -151,7 +151,7 @@
     ; a
     97 (handle-insert data)
     ; e
-    101 (handle-update data)
+    101 (handle-edit data)
     ; I
     73 data
     ; i
