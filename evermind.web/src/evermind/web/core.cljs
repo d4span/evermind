@@ -89,11 +89,14 @@
                    (fn [c] (select-node c selected))
                    children)))))
 
+(defn is-selected
+  [node] (-> node :attributes :selected))
+
 (defn selected-node
   [tree]
   (d/reduce-tree
     tree
-    (fn [n] (-> n :attributes :selected))))
+    #(is-selected %)))
 
 
 (defn handle-left
