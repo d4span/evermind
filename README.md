@@ -5,15 +5,14 @@
 Build and install using Clojure
 
     lein modules do test, install
-    
+
 Build and install using ClojureScript
 
     lein modules with-profiles clojurescript do clean, install
-    
+
 To run the frontend
 
-    cd evermind.web
-    lein figwheel
+    lein modules :dirs evermind.web figwheel
 
 
 ## Notes
