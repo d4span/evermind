@@ -1,6 +1,6 @@
 (ns evermind.web.core
- (:require-macros [cljs.core.async.macros :refer [go]])
- (:require [cljs.core.async :refer [put! chan <!]]
+ (:require-macros [cljs.core.async.macros :as asyncmacros])
+ (:require [cljs.core.async :as async]
            [evermind.domain.core :as d]
            [om.core :as om :include-macros true]
            [om.dom :as dom :include-macros true]))
@@ -61,7 +61,7 @@
     om/IRenderState
     (render-state [this {:keys [select]}]
         (dom/g #js {:key (str "group-" (:key node))}
-          (dom/text #js {:onClick (fn [e] (put! select node))
+          (dom/text #js {:onClick (fn [e] (async/put! select node))
                          :fontSize "3pt"
                          :fill (if (-> node :attributes :selected) "red" "black")
                          :x (-> node :visu :x)
@@ -246,16 +246,16 @@
   (reify
     om/IInitState
     (init-state [_]
-       {:select (chan)})
+       {:select (async/chan)})
     om/IWillMount
     (will-mount [_]
        (let [select (om/get-state owner :select)]
-         (go (loop []
-               (let [selected (<! select)]
-                  (om/transact! data [:mindmap]
-                                (fn [m]
-                                  (select-node m selected)))
-                  (recur))))))
+         (asyncmacros/go (loop []
+                          (let [selected (async/<! select)]
+                               (om/transact! data [:mindmap]
+                                             (fn [m]
+                                               (select-node m selected)))
+                               (recur))))))
     om/IRenderState
     (render-state [this {:keys [select]}]
         (let [mindmap (update-node (:mindmap data))]
