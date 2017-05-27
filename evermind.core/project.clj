@@ -6,7 +6,8 @@
 
   :plugins [[lein-modules "0.3.11"]
             [lein-cljsbuild "1.1.6"]
-            [lein-doo "0.1.7" :exclusions [[org.clojure/clojurescript]]]]
+            [lein-doo "0.1.7" :exclusions [[org.clojure/clojurescript]]]
+            [lein-cljfmt "0.5.6"]]
 
   :dependencies [[org.clojure/clojure "_"]
                  [cljs-uuid "0.0.4"]]
